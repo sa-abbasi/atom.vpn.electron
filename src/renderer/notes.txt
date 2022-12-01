@@ -1,0 +1,8 @@
+https://github.com/electron-react-boilerplate/electron-react-boilerplate
+
+https://electron-react-boilerplate.js.org/docs/installation
+
+https://electron-react-boilerplate.js.org/docs/building
+
+npm run build
+

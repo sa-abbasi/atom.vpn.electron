@@ -40,13 +40,24 @@ class SdkChannel {
     return this.requestId;
   }
 
-  OnSocketMessage(e) {
-    console.log(
-      `SdkChannel->OnSocketMessage received message from websocket ${e.data}`
-    );
-    const data = JSON.parse(e.data);
+  logReceivedMessage(data) {
+    if (data.length > 80) {
+      const data2 = data.substring(0, 80);
+      console.log(
+        `SdkChannel->OnSocketMessage received message from websocket ${data2}`
+      );
+    } else {
+      console.log(
+        `SdkChannel->OnSocketMessage received message from websocket ${data}`
+      );
+    }
+  }
 
+  OnSocketMessage(e) {
     const channel = this.holder;
+    channel.logReceivedMessage(e.data);
+
+    const data = JSON.parse(e.data);
 
     if (data.hasOwnProperty('RequestId')) {
       try {

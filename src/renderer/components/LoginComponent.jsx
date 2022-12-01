@@ -128,7 +128,10 @@ const LoginComponent = ({ loginInfo, setloginInfo }) => {
 
   return (
     <>
-      <div className="Card bg-secondary p-4 rounded-3">
+      <div
+        className="Card bg-secondary p-4 rounded-3"
+        style={{ minWidth: '400px' }}
+      >
         <div className="card-header my-3">
           <h4 className="card-title text-center"> Enter Credendentials</h4>
         </div>

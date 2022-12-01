@@ -67,7 +67,7 @@ const installExtensions = async () => {
 
 const startSDKProcess = () => {
   const executablePath =
-    'D:/repos/electron/atomsdk/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
+    'D:/atom.vpn/atom.vpn.console/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
 
   const child = execFile(
     executablePath,

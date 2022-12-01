@@ -34,28 +34,25 @@ const CountryListComponent = ({ loginInfo, setloginInfo }) => {
 
   return (
     <>
-      <h2 className="text-center w-100">Countries List</h2>
-
-      <div className="form-group mt-4 text-center ">
-        <button
-          type="button"
-          className="btn btn-sm btn-primary w-50"
-          onClick={getCountries}
-        >
-          Connect
-        </button>
-      </div>
+      <h2 className="text-center w-100" style={{ color: 'black' }}>
+        Countries List
+      </h2>
 
       <div>
-        <span>{loginInfo.psk}</span>
-        <br />
-        <span>{loginInfo.username}</span>
-        <br />
-        <span>{loginInfo.password}</span>
+        <div className="form-group mt-4 text-center ">
+          <button
+            type="button"
+            className="btn btn-sm btn-primary w-50"
+            onClick={getCountries}
+          >
+            Get Countries
+          </button>
+        </div>
+        <div className="form-group mt-4 mb-4 text-center ">
+          <Link to="login">Back To Home</Link>
+        </div>
       </div>
-      <div>
-        <Link to="login">Go Back</Link>
-      </div>
+
       <div
         style={{
           overflowY: 'scroll',
@@ -66,11 +63,11 @@ const CountryListComponent = ({ loginInfo, setloginInfo }) => {
         <table rules="all">
           <thead>
             <tr>
-              <th>No</th>
+              <th style={{ width: '50px' }}>S.No.</th>
               <th>Name</th>
-              <th>ISO Code</th>
-              <th>Latitue</th>
-              <th>Longitude</th>
+              <th style={{ width: '90px' }}>ISO Code</th>
+              <th style={{ width: '120px' }}>Latitue</th>
+              <th style={{ width: '120px' }}>Longitude</th>
               <th>Recom. Protocol</th>
             </tr>
           </thead>

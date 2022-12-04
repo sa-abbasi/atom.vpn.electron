@@ -8,6 +8,8 @@ class SdkChannel {
     this.requestQue = new Map();
     this.self = this;
     this.OnSocketMessage.bind(this);
+    this.MessageForwarder = null;
+    this.SetMessageForwarder = this.SetMessageForwarder.bind(this);
   }
 
   InitializeWebSocket() {
@@ -86,9 +88,11 @@ class SdkChannel {
         console.log(`SdkChannel->OnSocketMessage error ${error}`);
       }
     } else {
-      console.log(
-        'SdkChannel->OnSocketMessage received message does not have RequestId property: '
-      );
+      if (channel.MessageForwarder != null) {
+        channel.MessageForwarder(e.data);
+      } else {
+        console.log('socket MessageForwarder is null');
+      }
     }
   }
 
@@ -140,6 +144,14 @@ class SdkChannel {
 
       console.log(`after SdkChannel.isSocketReady isready_status : ${isready}`);
 
+      let callbackInterval = 1000 * 12;
+      if (messageObject.hasOwnProperty('timeOut')) {
+        callbackInterval = messageObject.timeOut;
+        if (callbackInterval < 12000) {
+          callbackInterval = 12 * 1000;
+        }
+      }
+
       if (isready) {
         messageObject['RequestId'] = this.getNextRequestId();
 
@@ -157,11 +169,11 @@ class SdkChannel {
           state.status = 1;
           reject('VPN SDK timedout connect request');
         }
-      }, 10000);
+      }, callbackInterval);
     });
   }
 
-  async Connect(psk, user_name, password) {
+  async ConnectSDK(psk, user_name, password) {
     await this.ConnectSocket();
 
     const request = {
@@ -169,6 +181,17 @@ class SdkChannel {
       PSK: psk,
       UserId: user_name,
       Password: password,
+      timeOut: 12000,
+    };
+
+    return this.SendMessage(request);
+  }
+
+  async DisConnectSDK() {
+    await this.ConnectSocket();
+
+    const request = {
+      MessageType: 3,
     };
 
     return this.SendMessage(request);
@@ -182,6 +205,84 @@ class SdkChannel {
     };
 
     return this.SendMessage(request);
+  }
+
+  async GetProtocols() {
+    await this.ConnectSocket();
+
+    const request = {
+      MessageType: 5,
+    };
+
+    return this.SendMessage(request);
+  }
+
+  async GetCities() {
+    await this.ConnectSocket();
+
+    const request = {
+      MessageType: 6,
+    };
+
+    return this.SendMessage(request);
+  }
+
+  async ConnectVPN(command) {
+    await this.ConnectSocket();
+
+    return this.SendMessage(command);
+  }
+
+  async DisconnectVPN() {
+    await this.ConnectSocket();
+
+    const request = {
+      MessageType: 8,
+    };
+
+    return this.SendMessage(request);
+  }
+
+  async ProcessCommand(command) {
+    if (command.MessageType === 2) {
+      // Returning promise
+      return this.ConnectSDK(command.psk, command.username, command.password);
+    }
+
+    if (command.MessageType === 3) {
+      // Returning promise
+      return this.DisConnectSDK();
+    }
+
+    if (command.MessageType === 4) {
+      return this.GetCountries();
+    }
+
+    if (command.MessageType === 5) {
+      return this.GetProtocols();
+    }
+
+    if (command.MessageType === 6) {
+      return this.GetCities();
+    }
+
+    if (command.MessageType === 7) {
+      return this.ConnectVPN(command);
+    }
+
+    if (command.MessageType === 8) {
+      return this.DisconnectVPN();
+    }
+
+    return {
+      isok: true,
+      message:
+        'Please check ProcessCommand in SdkChannel.js, this message is not handled yet',
+    };
+  }
+
+  SetMessageForwarder(CallBackFunction) {
+    this.MessageForwarder = CallBackFunction;
   }
 }
 
@@ -199,7 +300,9 @@ Socet
         Disconnect = 3,
         GetCountryList = 4,
         GetProtocols = 5,
-        GetCities = 6
+        GetCities = 6,
+        ConnectVPN=7,
+        DisConnectVPN=8
 
     }
 

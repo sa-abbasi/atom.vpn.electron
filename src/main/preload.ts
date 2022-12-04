@@ -23,5 +23,7 @@ contextBridge.exposeInMainWorld('electron', {
     invoke(channel: Channels, args: unknown[]): Promise<any> {
       return ipcRenderer.invoke(channel, args);
     },
+
+    OnSocketMessage: (callback) => ipcRenderer.on('socket-message', callback),
   },
 });

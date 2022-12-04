@@ -16,6 +16,10 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { SdkChannel } from './SdkChannel';
 
+const Store = require('electron-store');
+
+const store = new Store();
+
 const { execFile } = require('node:child_process');
 
 const sdkChannel = new SdkChannel('abc');
@@ -45,8 +49,8 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug = true;
+// process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
@@ -68,6 +72,18 @@ const installExtensions = async () => {
 const startSDKProcess = () => {
   const executablePath =
     'D:/atom.vpn/atom.vpn.console/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
+
+  const configFile = path.join(
+    path.dirname(__dirname),
+    'extraResources',
+    'config.json'
+  );
+
+  // vpnConsoleExePath
+
+  console.log(`here_is_app ${configFile}`);
+
+  store.set({ 'console-exe-path': executablePath });
 
   const child = execFile(
     executablePath,
@@ -94,22 +110,21 @@ async function handleIPCEvent(event: any, arg: any) {
   Disconnect = 3,
   GetCountryList = 4,
   GetProtocols = 5,
-  GetCities = 6
+  GetCities = 6,
+  ConnectVPN=7,
+  DisconnectVPN=8
 */
 
   const command = JSON.parse(arg);
 
-  if (command.MessageType === 2) {
-    // Returning promise
-    return sdkChannel.Connect(command.psk, command.username, command.password);
-  }
-
-  if (command.MessageType === 4) {
-    return sdkChannel.GetCountries();
-  }
-
-  return { isok: true, message: 'result from handleIPCEvent' };
+  return sdkChannel.ProcessCommand(command);
 }
+
+const SetMessageForwarder = () => {
+  sdkChannel.MessageForwarder = (args) => {
+    mainWindow.webContents.send('socket-message', args);
+  };
+};
 
 const createWindow = async () => {
   if (isDebug) {
@@ -194,5 +209,7 @@ app
     });
 
     startSDKProcess();
+
+    SetMessageForwarder();
   })
   .catch(console.log);

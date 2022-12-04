@@ -1,28 +1,31 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react';
+
+// import { useNavigate } from 'react-router-dom';
+
 import { CommsFacade } from '../CommsFacade';
 
-const LoginComponent = ({ loginInfo, setloginInfo }) => {
-  const navigate = useNavigate();
+const LoginComponent = observer(({ loginStore, loginCompleteCallBack }) => {
+  // const navigate = useNavigate();
 
   const [nameError, setnameError] = useState('');
   const [passwordError, setpasswordError] = useState('');
   const [pskError, setpskError] = useState('');
+  const showUserName = false;
+
+  const { loginInfo } = loginStore;
 
   const commsFacade = CommsFacade;
 
-  const handleInputChange = (e) => {
+  const handleFieldInputChange = (e) => {
     const { name, value } = e.target;
-    setloginInfo({
-      ...loginInfo,
-      [name]: value,
-    });
+    loginStore.loginInfo[name] = value;
   };
 
   const validatePassword = () => {
-    const password = loginInfo.password;
+    const { password } = loginInfo;
     if (!password) {
       setpasswordError('Password is required');
       return;
@@ -68,8 +71,8 @@ const LoginComponent = ({ loginInfo, setloginInfo }) => {
 
   const validateInput = () => {
     validatePSK();
-    validateUserName();
-    validatePassword();
+    // validateUserName();
+    // validatePassword();
   };
 
   const renderErrorMessage = (name) => {
@@ -103,103 +106,120 @@ const LoginComponent = ({ loginInfo, setloginInfo }) => {
   }, []);
 
   const handleConnectClick = (e) => {
-    // history.push('/home');
     console.log('LoginComp.handleConnectClick called');
 
     validateInput();
 
-    if (!loginInfo.isValid()) {
+    if (!loginStore.isValid) {
       return;
     }
 
     commsFacade
-      .Connect(loginInfo)
+      .Connect(loginStore.loginInfo)
       .then((result) => {
-        console.log(`result received from commsFacade ${result}`);
+        console.log(
+          `CommsFacade.Connect result received from commsFacade ${JSON.stringify(
+            result
+          )}`
+        );
+        // eslint-disable-next-line promise/always-return
         if (result.IsOK) {
-          navigate('/home');
+          loginCompleteCallBack();
+        } else {
+          // eslint-disable-next-line no-alert
+          alert(result.Message);
         }
       })
       .catch((error) => {
-        debugger;
-        console.log(`error ${error}`);
+        console.log(`CommsFacade.Connect error ${error}`);
       });
   };
 
   return (
-    <>
+    <div className="Center-Item">
       <div
         className="Card bg-secondary p-4 rounded-3"
         style={{ minWidth: '400px' }}
       >
-        <div className="card-header my-3">
+        {/* <div className="card-header my-3">
           <h4 className="card-title text-center"> Enter Credendentials</h4>
-        </div>
+        </div> */}
         <div className="card-body">
           <div className="form-group">
             <label htmlFor="psk">Preshared Security Key:</label>
             <input
               type="text"
               name="psk"
-              value={loginInfo.psk}
+              value={loginStore.loginInfo.psk}
               className="form-control"
               placeholder="Enter PSK"
               id="psk"
               minLength={10}
               maxLength={50}
               required
-              onChange={handleInputChange}
+              onChange={(event) => {
+                loginStore.setPsk(event.target.value);
+                validateInput();
+              }}
             />
             {renderErrorMessage('psk')}
           </div>
 
-          <div className="form-group mt-2">
-            <label htmlFor="username">User Name:</label>
-            <input
-              type="text"
-              name="username"
-              value={loginInfo.username}
-              className="form-control"
-              placeholder="Enter User Name"
-              id="username"
-              minLength={4}
-              maxLength={12}
-              required
-              onChange={handleInputChange}
-            />
-            {renderErrorMessage('username')}
-          </div>
-
-          <div className="form-group mt-2">
-            <label htmlFor="password">Password:</label>
-            <input
-              type="text"
-              name="password"
-              id="password"
-              value={loginInfo.password}
-              className="form-control"
-              placeholder="Enter Password"
-              minLength={4}
-              maxLength={12}
-              required
-              onChange={handleInputChange}
-            />
-            {renderErrorMessage('password')}
-          </div>
-
+          {showUserName && (
+            <div className="form-group mt-2">
+              <label htmlFor="username">User Name:</label>
+              <input
+                type="text"
+                name="username"
+                value={loginStore.loginInfo.username}
+                className="form-control"
+                placeholder="Enter User Name"
+                id="username"
+                minLength={4}
+                maxLength={12}
+                required
+                onChange={(event) => {
+                  loginStore.setUserName(event.target.value);
+                  validateInput();
+                }}
+              />
+              {renderErrorMessage('username')}
+            </div>
+          )}
+          {showUserName && (
+            <div className="form-group mt-2">
+              <label htmlFor="password">Password:</label>
+              <input
+                type="text"
+                name="password"
+                id="password"
+                value={loginStore.loginInfo.password}
+                className="form-control"
+                placeholder="Enter Password"
+                minLength={4}
+                maxLength={12}
+                required
+                onChange={(event) => {
+                  loginStore.setPassword(event.target.value);
+                  validateInput();
+                }}
+              />
+              {renderErrorMessage('password')}
+            </div>
+          )}
           <div className="form-group mt-4 text-center ">
             <button
               type="button"
               className="btn btn-sm btn-primary w-50"
               onClick={handleConnectClick}
             >
-              Connect
+              Next
             </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
-};
+});
 
 export default LoginComponent;

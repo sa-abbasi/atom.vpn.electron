@@ -1,3 +1,7 @@
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable object-shorthand */
+/* eslint-disable prettier/prettier */
+/* eslint-disable func-names */
 const channel = 'ipc-001';
 
 const CommsFacade = {
@@ -10,10 +14,18 @@ const CommsFacade = {
     // window.electron.ipcRenderer.invoke(ipcChannel, ['ping']);
   },
 
+  Disconnect: function () {
+    const command = { MessageType: 3 };
+
+    const message = JSON.stringify(command);
+    return window.electron.ipcRenderer.invoke(channel, message);
+  },
+
   GetCountryList: function () {
     const command = { MessageType: 4 };
 
     const message = JSON.stringify(command);
+    console.log('CommsFacade sending messagetype 4 getcountries');
     return window.electron.ipcRenderer.invoke(channel, message);
   },
 
@@ -21,6 +33,7 @@ const CommsFacade = {
     const command = { MessageType: 5 };
 
     const message = JSON.stringify(command);
+    console.log('CommsFacade sending messagetype 5 getprotocols');
     return window.electron.ipcRenderer.invoke(channel, message);
   },
 
@@ -31,8 +44,15 @@ const CommsFacade = {
     return window.electron.ipcRenderer.invoke(channel, message);
   },
 
-  Disconnect: function () {
-    const command = { MessageType: 3 };
+  ConnectVPN: function (VPNProps) {
+    const command = { MessageType: 7, ...VPNProps };
+    command['timeOut'] = 20 * 1000;
+    const message = JSON.stringify(command);
+    return window.electron.ipcRenderer.invoke(channel, message);
+  },
+
+  DisconnectVPN: function () {
+    const command = { MessageType: 8 };
 
     const message = JSON.stringify(command);
     return window.electron.ipcRenderer.invoke(channel, message);
@@ -51,8 +71,9 @@ Socet
         Disconnect = 3,
         GetCountryList = 4,
         GetProtocols = 5,
-        GetCities = 6
-
+        GetCities = 6,
+        ConnectVPN=7,
+        DisConnectVPN=8
     }
 
 

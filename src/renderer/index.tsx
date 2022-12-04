@@ -12,4 +12,4 @@ window.electron.ipcRenderer.once(ipcChannel, (arg) => {
   // eslint-disable-next-line no-console
   console.log(arg);
 });
-window.electron.ipcRenderer.sendMessage(ipcChannel, ['ping']);
+// window.electron.ipcRenderer.sendMessage(ipcChannel, ['ping']);

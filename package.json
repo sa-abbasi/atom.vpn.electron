@@ -7,6 +7,11 @@
     "app",
     "demo"
   ],
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true
+  },
   "main": "./src/main/main.ts",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -102,7 +107,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@types/jest": "^28.1.7",
-    "@types/node": "18.7.6",
+    "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/react-test-renderer": "^18.0.0",
@@ -122,6 +127,7 @@
     "electron-builder": "^23.3.3",
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "^1.2.1",
+    "electron-packager": "^17.1.1",
     "electron-rebuild": "^3.2.9",
     "electronmon": "^2.0.2",
     "eslint": "^8.22.0",

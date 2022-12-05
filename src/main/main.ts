@@ -8,17 +8,13 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
+import * as path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { SdkChannel } from './SdkChannel';
-
-const Store = require('electron-store');
-
-const store = new Store();
 
 const { execFile } = require('node:child_process');
 
@@ -49,8 +45,8 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug = true;
-// process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
@@ -70,20 +66,16 @@ const installExtensions = async () => {
 };
 
 const startSDKProcess = () => {
-  const executablePath =
-    'D:/atom.vpn/atom.vpn.console/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
+  console.log('starting sdk process');
+  // const executablePath =  'D:/atom.vpn/atom.vpn.console/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
 
-  const configFile = path.join(
-    path.dirname(__dirname),
-    'extraResources',
-    'config.json'
-  );
+  const configFile = path.join(path.dirname(__dirname), 'config.json');
 
-  // vpnConsoleExePath
+  const fs = require('fs');
+  let rawdata = fs.readFileSync(configFile);
 
-  console.log(`here_is_app ${configFile}`);
-
-  store.set({ 'console-exe-path': executablePath });
+  const config = JSON.parse(rawdata);
+  const executablePath = config.vpnConsoleExePath;
 
   const child = execFile(
     executablePath,
@@ -91,6 +83,7 @@ const startSDKProcess = () => {
     (error, stdout, stderr) => {
       if (error) {
         console.log(`Cannot start dotnet application error: ${error}`);
+        throw `Cannot start dotnet vpnconsole application, error: ${error}`;
       }
       // console.log(stdout);
     }

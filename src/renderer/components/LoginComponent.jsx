@@ -13,7 +13,7 @@ const LoginComponent = observer(({ loginStore, loginCompleteCallBack }) => {
   const [nameError, setnameError] = useState('');
   const [passwordError, setpasswordError] = useState('');
   const [pskError, setpskError] = useState('');
-  const showUserName = false;
+  const showUserName = true;
 
   const { loginInfo } = loginStore;
 
@@ -176,7 +176,7 @@ const LoginComponent = observer(({ loginStore, loginCompleteCallBack }) => {
                 placeholder="Enter User Name"
                 id="username"
                 minLength={4}
-                maxLength={12}
+                maxLength={30}
                 required
                 onChange={(event) => {
                   loginStore.setUserName(event.target.value);
@@ -197,7 +197,7 @@ const LoginComponent = observer(({ loginStore, loginCompleteCallBack }) => {
                 className="form-control"
                 placeholder="Enter Password"
                 minLength={4}
-                maxLength={12}
+                maxLength={30}
                 required
                 onChange={(event) => {
                   loginStore.setPassword(event.target.value);

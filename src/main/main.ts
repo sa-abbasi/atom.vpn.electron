@@ -45,8 +45,8 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug = true;
-// process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
@@ -72,38 +72,43 @@ const ShowLogMessage = (strMessage: string) => {
 const startSDKProcess = () => {
   console.log('starting sdk process');
   // const executablePath =  'D:/vpn_app/atomvpnapp-win32-x64/resources/console_app/Atom.VPN.Console.exe';
+  try {
+    const configFile = path.join(path.dirname(__dirname), 'config.json');
 
-  const configFile = path.join(path.dirname(__dirname), 'config.json');
+    setTimeout(() => {
+      ShowLogMessage(`Configuration file path ${configFile}`);
+    }, 3000);
 
-  setTimeout(() => {
-    ShowLogMessage(`Configuration file path ${configFile}`);
-  }, 3000);
+    const fs = require('fs');
+    let rawdata = fs.readFileSync(configFile);
 
-  const fs = require('fs');
-  let rawdata = fs.readFileSync(configFile);
+    const config = JSON.parse(rawdata);
+    const executablePath = config.vpnConsoleExePath;
 
-  const config = JSON.parse(rawdata);
-  const executablePath = config.vpnConsoleExePath;
+    setTimeout(() => {
+      ShowLogMessage(`Starting VPN Console process ${executablePath}`);
+    }, 3000);
 
-  setTimeout(() => {
-    ShowLogMessage(`Starting VPN Console process ${executablePath}`);
-  }, 3000);
-
-  const child = execFile(
-    executablePath,
-    ['from_electron'],
-    (error, stdout, stderr) => {
-      if (error) {
-        setTimeout(() => {
-          ShowLogMessage(
-            `Cannot start VPN Console process due to error ${error}`
-          );
-        }, 3000);
-        console.log(`Cannot start dotnet application error: ${error}`);
+    const child = execFile(
+      executablePath,
+      ['from_electron'],
+      (error, stdout, stderr) => {
+        if (error) {
+          setTimeout(() => {
+            ShowLogMessage(
+              `Cannot start VPN Console process due to error ${error}`
+            );
+          }, 3000);
+          console.log(`Cannot start dotnet application error: ${error}`);
+        }
+        // console.log(stdout);
       }
-      // console.log(stdout);
-    }
-  );
+    );
+  } catch (error2) {
+    setTimeout(() => {
+      ShowLogMessage(`VPN Console application launching error: ${error2}`);
+    }, 3000);
+  }
 };
 // End of startSDKProcess
 

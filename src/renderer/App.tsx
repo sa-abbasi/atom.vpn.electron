@@ -72,7 +72,9 @@ export default function App() {
   const onLoginComplete = () => {
     // setloginInfo(loginResult);
     messageStore.clearStore();
+    messageStore.addInfo('loading protocols from sdk');
     getProtocols();
+    messageStore.addInfo('loading countries from sdk');
     getCountries();
   };
 
@@ -91,6 +93,7 @@ export default function App() {
     <div>
       <LoginComponent
         loginStore={LoginStore}
+        messageStore={messageStore}
         loginCompleteCallBack={() => onLoginComplete()}
       />
 

@@ -45,8 +45,8 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug = true;
+// process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
@@ -65,11 +65,19 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+const ShowLogMessage = (strMessage: string) => {
+  mainWindow.webContents.send('socket-message', strMessage);
+};
+
 const startSDKProcess = () => {
   console.log('starting sdk process');
-  // const executablePath =  'D:/atom.vpn/atom.vpn.console/Atom.VPN.Console/bin/Debug/Atom.VPN.Console.exe';
+  // const executablePath =  'D:/vpn_app/atomvpnapp-win32-x64/resources/console_app/Atom.VPN.Console.exe';
 
   const configFile = path.join(path.dirname(__dirname), 'config.json');
+
+  setTimeout(() => {
+    ShowLogMessage(`Configuration file path ${configFile}`);
+  }, 3000);
 
   const fs = require('fs');
   let rawdata = fs.readFileSync(configFile);
@@ -77,13 +85,21 @@ const startSDKProcess = () => {
   const config = JSON.parse(rawdata);
   const executablePath = config.vpnConsoleExePath;
 
+  setTimeout(() => {
+    ShowLogMessage(`Starting VPN Console process ${executablePath}`);
+  }, 3000);
+
   const child = execFile(
     executablePath,
     ['from_electron'],
     (error, stdout, stderr) => {
       if (error) {
+        setTimeout(() => {
+          ShowLogMessage(
+            `Cannot start VPN Console process due to error ${error}`
+          );
+        }, 3000);
         console.log(`Cannot start dotnet application error: ${error}`);
-        throw `Cannot start dotnet vpnconsole application, error: ${error}`;
       }
       // console.log(stdout);
     }
@@ -201,8 +217,7 @@ app
       if (mainWindow === null) createWindow();
     });
 
-    startSDKProcess();
-
     SetMessageForwarder();
+    startSDKProcess();
   })
   .catch(console.log);

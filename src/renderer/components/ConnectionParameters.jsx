@@ -74,6 +74,11 @@ const ConnectionParameters = observer(
       messageStore.addInfo(`connecting vpn`);
       const normalProps = vpnPropStore.getPlainProps();
 
+      const ss = JSON.stringify(normalProps);
+      const msg = `Starting VPN Connection with parameters:\n ${ss}`;
+
+      messageStore.addInfo(msg);
+
       CommsFacade.ConnectVPN(normalProps)
         // eslint-disable-next-line promise/always-return
         .then((result) => {

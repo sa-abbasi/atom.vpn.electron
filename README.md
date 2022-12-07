@@ -13,7 +13,8 @@ This repo has Electron JS application which is used to make VPN Connection using
 
 ## To run the application from VSCode execute below command from VSCode Terminal
 
-1. npm start
+1. Copy all files from atom.vpn.console application's bin folder to a path which is written in config.json or check function startSDKProcess() in main.ts which launches atom.vpn.console. This applicaiton cannot run without atom.vpn.console.exe. https://github.com/sa-abbasi/atom.vpn.console.git
+2. npm start
 
 ## Compiling Application for Distribution/QA
 Run below command to compile application for distribution

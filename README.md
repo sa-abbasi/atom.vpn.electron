@@ -22,3 +22,6 @@ Run below command to compile application for distribution
 Application will be compiled and published to folder (..\atom.vpn.electron\atomvpnapp-win32-x64)
 2. Copy content from folder (..\atom.vpn.electron\atomvpnapp-win32-x64\resources\app\release\app\dist) to a similarly folder found in release.
 Note: I created two release in this repo, please download the latter release and extract it, you will find a folder structure in extracted zip (atomvpnapp-win32-x64\resources\app\release\app\dist).
+
+Please check release notes   for (atom vpn electron application v1.0.1) and download this release, it has everything pre-compiled, configured and packaged.
+You need to install Atom VPN drivers and Windows Service, please check https://Secure.com.
